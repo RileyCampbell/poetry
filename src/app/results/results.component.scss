@@ -1,0 +1,51 @@
+:host {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.mat-mdc-row:hover {
+  background-color: #003300;
+}
+
+.results-table-container {
+  width: 100%;
+  max-height: 85vh;
+  overflow: auto;
+  display: block;
+}
+
+.results-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.results-table th,
+.results-table td {
+  height: 50px;
+  line-height: 50px;
+  text-align: left;
+}
+
+.results-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.results-table tbody {
+  display: block;
+  max-height: calc(89vh - 50px);
+  overflow-y: auto;
+}
+
+.results-table .mat-column-index {
+  width: 50px;
+  max-width: 50px;
+  min-width: 50px;
+}
+
+.mat-paginator {
+  margin-top: 10px;
+}

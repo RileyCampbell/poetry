@@ -1,0 +1,86 @@
+<link
+  href="https://fonts.googleapis.com/icon?family=Material+Icons"
+  rel="stylesheet"
+/>
+
+<form [formGroup]="searchForm">
+  <!-- Title -->
+  <mat-form-field appearance="outline">
+    <span matPrefix>
+      <mat-icon class="search-icon">title</mat-icon>
+    </span>
+    <mat-label>Search by title</mat-label>
+    <input
+      matInput
+      matTooltip="Title of the poem"
+      type="text"
+      formControlName="title"
+      (keyup.enter)="runSearch()"
+    />
+  </mat-form-field>
+
+  <!-- Author -->
+  <mat-form-field appearance="outline">
+    <span matPrefix>
+      <mat-icon class="search-icon">person</mat-icon>
+    </span>
+    <mat-label>Search by author</mat-label>
+    <input
+      matInput
+      matTooltip="Author of the poems"
+      type="text"
+      placeholder="Search by author"
+      formControlName="author"
+      (keyup.enter)="runSearch()"
+    />
+  </mat-form-field>
+
+  <!-- Search -->
+  <button
+    class="search-icon"
+    mat-flat-button
+    type="button"
+    color="primary"
+    matTooltip="Search poems"
+    (click)="runSearch()"
+  >
+    <mat-icon>search</mat-icon> Search
+  </button>
+
+  <!-- Random Poems Count -->
+  <mat-form-field appearance="outline">
+    <span matPrefix>
+      <mat-icon class="search-icon">casino</mat-icon>
+    </span>
+    <mat-label>Number of Random Poems</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="randomPoemCount"
+      matTooltip="Number of random poem results desired"
+      placeholder="Number of poems"
+      maxlength="3"
+      min="1"
+      max="999"
+      (keyup.enter)="randomPoem()"
+    />
+    <mat-error *ngIf="searchForm.get('randomPoemCount')?.hasError('pattern')">
+      Please enter a valid integer.
+    </mat-error>
+    <mat-error *ngIf="searchForm.get('randomPoemCount')?.hasError('maxlength')">
+      Maximum 3 digits allowed.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Random Poems -->
+  <button
+    class="search-icon"
+    mat-flat-button
+    type="button"
+    color="primary"
+    matTooltip="Press me for random poems!"
+    (click)="randomPoem()"
+  >
+    <mat-icon>casino</mat-icon> Feeling Lucky
+  </button>
+</form>

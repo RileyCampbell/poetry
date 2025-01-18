@@ -1,0 +1,43 @@
+.background {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+.poem-contents {
+  background-color: black;
+  padding: 30px;
+  font-style: italic;
+  text-align: center;
+  position: relative;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+.exit-button {
+  position: sticky;
+  top: 20px;
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.title {
+  font-size: large;
+  font-weight: bold;
+  font-style: normal;
+  text-align: left;
+}
+
+.author {
+  text-align: left;
+  font-style: normal;
+}

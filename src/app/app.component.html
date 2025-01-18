@@ -1,0 +1,10 @@
+<router-outlet></router-outlet>
+<app-search
+  (search$)="search($event)"
+  (random$)="getRandom($event)"
+></app-search>
+<app-results [poems$]="poems$" (SelectedPoem$)="openPoem($event)"></app-results>
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<app-poem></app-poem>

@@ -1,0 +1,14 @@
+@use "@angular/material" as mat;
+
+html,
+body {
+  margin: 0;
+  color-scheme: dark;
+  @include mat.theme(
+    (
+      color: mat.$spring-green-palette,
+      background typography: Roboto,
+      density: 0,
+    )
+  );
+}

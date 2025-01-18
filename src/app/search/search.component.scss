@@ -1,0 +1,34 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 75px;
+  background-color: var(--mat-sys-surface);
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  width: 100%;
+  justify-content: center;
+}
+
+mat-form-field {
+  width: 200px;
+  height: 56px;
+  margin-left: 10px;
+}
+
+.search-icon {
+  font-size: 20px;
+  margin-left: 8px;
+}
+
+.mat-flat-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
