@@ -53,10 +53,9 @@ export class SearchComponent {
    * Pass the user input to the search function.
    */
   runSearch() {
-    const formValues = this.searchForm.value;
     const parameters: SearchParams = {
-      title: formValues.title,
-      author: formValues.author,
+      title: this.searchForm.value.title,
+      author: this.searchForm.value.author,
     };
     this.search$.next(parameters);
   }

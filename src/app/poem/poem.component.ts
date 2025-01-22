@@ -19,19 +19,10 @@ export class PoemComponent {
   @Input() poem: Poem | null = null;
 
   /**
-   * Lifecycle hook that is called when the component is initialized.
    * This method adds an event listener for the 'keydown' event to detect when the Escape key is pressed.
    */
   ngOnInit() {
     document.addEventListener("keydown", this.handleKeydown);
-  }
-
-  /**
-   * Lifecycle hook that is called when the component is destroyed.
-   * This method removes the event listener for the 'keydown' event to prevent memory leaks.
-   */
-  ngOnDestroy() {
-    document.removeEventListener("keydown", this.handleKeydown);
   }
 
   /**
@@ -49,5 +40,12 @@ export class PoemComponent {
    */
   exitView() {
     this.poem = null;
+  }
+
+  /**
+   * This method removes the event listener for the 'keydown' event to prevent memory leaks.
+   */
+  ngOnDestroy() {
+    document.removeEventListener("keydown", this.handleKeydown);
   }
 }

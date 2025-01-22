@@ -52,7 +52,7 @@ describe("PoetryService", () => {
     });
 
     const req = httpMock.expectOne(
-      `https://poetrydb.org/author/${encodeURIComponent(author)}/title/${encodeURIComponent(title)}`,
+      `https://poetrydb.org/author,title/${encodeURIComponent(author)};${encodeURIComponent(title)}`,
     );
     expect(req.request.method).toBe("GET");
     req.flush(mockPoems);

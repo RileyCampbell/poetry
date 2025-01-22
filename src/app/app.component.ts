@@ -1,4 +1,4 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, ViewChild, OnDestroy } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { ResultsComponent } from "./results/results.component";
 import { PoetryService } from "./services/poetry.service";
@@ -8,7 +8,7 @@ import { CommonModule } from "@angular/common";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Poem } from "./services/poem.interface";
 import { PoemComponent } from "./poem/poem.component";
-import { Observable, of } from "rxjs";
+import { Observable, of, Subscription } from "rxjs";
 import Swal from "sweetalert2";
 
 /**
@@ -29,12 +29,13 @@ import Swal from "sweetalert2";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   @ViewChild(ResultsComponent) table!: ResultsComponent;
   @ViewChild(PoemComponent) poemView!: PoemComponent;
 
   poems$: Observable<Poem[]> = of([]);
   loading = false;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(private readonly _poetryService: PoetryService) {}
 
@@ -66,7 +67,7 @@ export class AppComponent {
       this.poems$ = this._poetryService.getPoemsByAuthor(parameters.author);
     }
 
-    this.poems$.subscribe({
+    const searchSubscription = this.poems$.subscribe({
       next: (poems) => {
         if (poems.length > 0) {
           hasResults = true;
@@ -83,6 +84,8 @@ export class AppComponent {
         }
       },
     });
+
+    this.subscriptions.add(searchSubscription);
   }
 
   /**
@@ -95,7 +98,7 @@ export class AppComponent {
     let hasResults = false;
     this.poems$ = this._poetryService.getPoemsByRandom(count);
 
-    this.poems$.subscribe({
+    const randomSubscription = this.poems$.subscribe({
       next: (poems) => {
         if (poems.length > 0) {
           hasResults = true;
@@ -112,6 +115,8 @@ export class AppComponent {
         }
       },
     });
+
+    this.subscriptions.add(randomSubscription);
   }
 
   /**
@@ -129,5 +134,12 @@ export class AppComponent {
       timerProgressBar: true,
       showConfirmButton: false,
     });
+  }
+
+  /**
+   * Cleanup subscriptions on destroy to prevent memory leaks.
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

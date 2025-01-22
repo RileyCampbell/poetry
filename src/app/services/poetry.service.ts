@@ -22,7 +22,7 @@ export class PoetryService {
     const encodedAuthor = encodeURIComponent(author);
     const encodedTitle = encodeURIComponent(title);
     return this._poetryDBRequest(
-      `${this.apiUrl}/author/${encodedAuthor}/title/${encodedTitle}`,
+      `${this.apiUrl}/author,title/${encodedAuthor};${encodedTitle}`,
     );
   }
 
