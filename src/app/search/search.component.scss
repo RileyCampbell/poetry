@@ -1,5 +1,5 @@
 :host {
-  display: flex;
+  display: grid;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -8,7 +8,7 @@
 }
 
 .search-form {
-  display: flex;
+  display: grid;
   align-items: center;
   margin-right: 15px;
   width: 100%;
@@ -27,7 +27,7 @@ mat-form-field {
 }
 
 .mat-flat-button {
-  display: flex;
+  display: grid;
   align-items: center;
   justify-content: center;
   min-width: 140px;
