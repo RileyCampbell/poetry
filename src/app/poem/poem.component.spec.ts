@@ -1,73 +1,86 @@
-// import { ComponentFixture, TestBed } from "@angular/core/testing";
-// import { PoemComponent } from "./poem.component";
-// import { By } from "@angular/platform-browser";
-// import { Poem } from "../services/poem.interface";
-// import { CommonModule } from "@angular/common";
-// import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"; // Include this if your component uses it
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { PoemComponent } from "./poem.component";
+import { Poem } from "../services/poem.interface";
+import { CommonModule } from "@angular/common";
+import { MatIconModule } from "@angular/material/icon";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDividerModule } from "@angular/material/divider";
 
-// describe("PoemComponent", () => {
-//   let fixture: ComponentFixture<PoemComponent>;
-//   let component: PoemComponent;
+describe("PoemComponent", () => {
+  let component: PoemComponent;
+  let fixture: ComponentFixture<PoemComponent>;
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       imports: [
-//         CommonModule, // Import CommonModule to handle basic directives
-//         PoemComponent, // Import the standalone component directly here
-//         MatProgressSpinnerModule, // Include other modules if required
-//       ],
-//     }).compileComponents();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        CommonModule,
+        MatIconModule,
+        MatButtonModule,
+        MatDividerModule,
+        PoemComponent,
+      ],
+    }).compileComponents();
 
-//     fixture = TestBed.createComponent(PoemComponent);
-//     component = fixture.componentInstance;
-//     fixture.detectChanges(); // Detect initial changes to the component
-//   });
+    fixture = TestBed.createComponent(PoemComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-//   it("should display poem details when a poem is provided", () => {
-//     // Create a mock poem
-//     const mockPoem: Poem = {
-//       title: "Mock Poem",
-//       author: "Mock Author",
-//       lines: ["Line 1", "Line 2"],
-//       linecount: 2,
-//     };
+  it("should create the component", () => {
+    expect(component).toBeTruthy();
+  });
 
-//     // Assign the mock poem to the component
-//     component.poem = mockPoem;
+  it("should set the poem input correctly", () => {
+    const mockPoem: Poem = {
+      title: "Test Poem",
+      author: "Test Author",
+      lines: ["Line 1", "Line 2"],
+      linecount: 2,
+    };
+    component.poem = mockPoem;
+    expect(component.poem).toEqual(mockPoem);
+  });
 
-//     // Ensure the view is updated after assigning the poem
-//     fixture.detectChanges();
+  it("should clear the poem when exitView is called", () => {
+    const mockPoem: Poem = {
+      title: "Test Poem",
+      author: "Test Author",
+      lines: ["Line 1", "Line 2"],
+      linecount: 2,
+    };
+    component.poem = mockPoem;
+    component.exitView();
+    expect(component.poem).toBeNull();
+  });
 
-//     // Query for DOM elements (Check if elements are available)
-//     const titleElement = fixture.debugElement.query(By.css(".poem-title"));
-//     const authorElement = fixture.debugElement.query(By.css(".poem-author"));
-//     const linesElement = fixture.debugElement.query(By.css(".poem-lines"));
+  it("should call exitView when Escape key is pressed", () => {
+    spyOn(component, "exitView");
+    const event = new KeyboardEvent("keydown", { key: "Escape" });
+    component.handleKeydown(event);
+    expect(component.exitView).toHaveBeenCalled();
+  });
 
-//     // Check if the title, author, and lines are displayed correctly
-//     expect(titleElement).toBeTruthy();
-//     expect(authorElement).toBeTruthy();
-//     expect(linesElement).toBeTruthy();
-//     expect(titleElement.nativeElement.textContent).toContain(mockPoem.title);
-//     expect(authorElement.nativeElement.textContent).toContain(mockPoem.author);
-//     expect(linesElement.nativeElement.textContent).toContain(mockPoem.lines[0]);
-//     expect(linesElement.nativeElement.textContent).toContain(mockPoem.lines[1]);
-//   });
+  it("should not call exitView for other keys", () => {
+    spyOn(component, "exitView");
+    const event = new KeyboardEvent("keydown", { key: "Enter" });
+    component.handleKeydown(event);
+    expect(component.exitView).not.toHaveBeenCalled();
+  });
 
-//   it("should not display poem details when no poem is provided", () => {
-//     // Ensure that the component is not given any poem
-//     component.poem = null;
+  it("should attach and detach keydown event listeners", () => {
+    spyOn(document, "addEventListener");
+    spyOn(document, "removeEventListener");
 
-//     // Detect changes to trigger view update
-//     fixture.detectChanges();
+    component.ngOnInit();
+    expect(document.addEventListener).toHaveBeenCalledWith(
+      "keydown",
+      component.handleKeydown,
+    );
 
-//     // Query for DOM elements (should be null if no poem is provided)
-//     const titleElement = fixture.debugElement.query(By.css(".poem-title"));
-//     const authorElement = fixture.debugElement.query(By.css(".poem-author"));
-//     const linesElement = fixture.debugElement.query(By.css(".poem-lines"));
-
-//     // Ensure the elements are not in the DOM when no poem is provided
-//     expect(titleElement).toBeNull();
-//     expect(authorElement).toBeNull();
-//     expect(linesElement).toBeNull();
-//   });
-// });
+    component.ngOnDestroy();
+    expect(document.removeEventListener).toHaveBeenCalledWith(
+      "keydown",
+      component.handleKeydown,
+    );
+  });
+});

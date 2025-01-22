@@ -56,7 +56,7 @@ export class ResultsComponent implements AfterViewInit, OnChanges {
    * Update table values on change
    */
   ngOnChanges(changes: SimpleChanges) {
-    if (changes["poems$"] && this.poems$) {
+    if (changes["poems$"] && !!this.poems$) {
       this.poems$.subscribe((poems) => {
         this.tableInfo.data = poems;
       });

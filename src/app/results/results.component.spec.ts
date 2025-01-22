@@ -1,126 +1,89 @@
-// import { ComponentFixture, TestBed } from "@angular/core/testing";
-// import { ResultsComponent } from "./results.component";
-// import { MatTableModule } from "@angular/material/table";
-// import { MatSortModule } from "@angular/material/sort";
-// import { MatPaginatorModule } from "@angular/material/paginator";
-// import { MatInputModule } from "@angular/material/input";
-// import { MatButtonModule } from "@angular/material/button";
-// import { By } from "@angular/platform-browser";
-// import { MatSort } from "@angular/material/sort";
-// import { MatPaginator } from "@angular/material/paginator";
-// import { of } from "rxjs";
-// import { Poem } from "../services/poem.interface";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ResultsComponent } from "./results.component";
+import { MatTableDataSource } from "@angular/material/table";
+import { MatSort } from "@angular/material/sort";
+import { MatPaginator } from "@angular/material/paginator";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { Poem } from "../services/poem.interface";
+import { of, Subject } from "rxjs";
 
-// describe("ResultsComponent", () => {
-//   let component: ResultsComponent;
-//   let fixture: ComponentFixture<ResultsComponent>;
+describe("ResultsComponent", () => {
+  let component: ResultsComponent;
+  let fixture: ComponentFixture<ResultsComponent>;
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       imports: [
-//         MatTableModule,
-//         MatSortModule,
-//         MatPaginatorModule,
-//         MatInputModule,
-//         MatButtonModule,
-//       ],
-//       declarations: [ResultsComponent],
-//     }).compileComponents();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ResultsComponent, BrowserAnimationsModule],
+    }).compileComponents();
 
-//     fixture = TestBed.createComponent(ResultsComponent);
-//     component = fixture.componentInstance;
-//   });
+    fixture = TestBed.createComponent(ResultsComponent);
+    component = fixture.componentInstance;
 
-//   it("should create the component", () => {
-//     expect(component).toBeTruthy();
-//   });
+    const mockPoems: Poem[] = [
+      {
+        title: "Mock Poem 1",
+        author: "Mock Author 1",
+        lines: ["Line 1"],
+        linecount: 1,
+      },
+      {
+        title: "Mock Poem 2",
+        author: "Mock Author 2",
+        lines: ["Line 2"],
+        linecount: 2,
+      },
+    ];
 
-//   it("should set MatSort and MatPaginator after view initialization", () => {
-//     const mockSort = jasmine.createSpyObj("MatSort", [], {});
-//     const mockPaginator = jasmine.createSpyObj("MatPaginator", [], {});
-//     component.sort = mockSort;
-//     component.paginator = mockPaginator;
+    component.poems$ = of(mockPoems);
 
-//     component.ngAfterViewInit();
+    component.tableInfo = new MatTableDataSource<Poem>([]);
+    component.SelectedPoem$ = new Subject<Poem>();
 
-//     expect(component.tableInfo.sort).toBe(mockSort);
-//     expect(component.tableInfo.paginator).toBe(mockPaginator);
-//   });
+    fixture.detectChanges();
+  });
 
-//   it("should update the table data when poems$ changes", () => {
-//     const mockPoems: Poem[] = [
-//       { title: "Poem 1", author: "Author 1", lines: ["Line 1"], linecount: 1 },
-//       {
-//         title: "Poem 2",
-//         author: "Author 2",
-//         lines: ["Line 1", "Line 2"],
-//         linecount: 2,
-//       },
-//     ];
-//     component.poems$ = of(mockPoems);
+  afterAll(() => {
+    component.tableInfo = new MatTableDataSource<Poem>([]);
+    component.SelectedPoem$ = new Subject<Poem>();
+  });
 
-//     component.ngOnChanges({
-//       poems$: {
-//         currentValue: of(mockPoems),
-//         previousValue: null,
-//         firstChange: true,
-//         isFirstChange: () => true,
-//       },
-//     });
+  it("should create the component", () => {
+    expect(component).toBeTruthy();
+  });
 
-//     expect(component.tableInfo.data).toEqual(mockPoems);
-//   });
+  it("should update table data when poems$ emits new data", () => {
+    const mockPoems: Poem[] = [
+      { title: "Poem 1", author: "Author 1", lines: ["Line 1"], linecount: 1 },
+      { title: "Poem 2", author: "Author 2", lines: ["Line 2"], linecount: 2 },
+    ];
 
-//   it("should emit the selected poem when viewPoem is called", () => {
-//     spyOn(component.SelectedPoem$, "next");
-//     const mockPoem: Poem = {
-//       title: "Poem 1",
-//       author: "Author 1",
-//       lines: ["Line 1"],
-//       linecount: 1,
-//     };
+    component.poems$ = of(mockPoems);
 
-//     component.viewPoem(mockPoem);
+    component.ngOnChanges({
+      poems$: {
+        currentValue: of(mockPoems),
+        firstChange: true,
+        previousValue: undefined,
+        isFirstChange: () => true,
+      },
+    });
 
-//     expect(component.SelectedPoem$.next).toHaveBeenCalledWith(mockPoem);
-//   });
+    expect(component.tableInfo.data).toEqual(mockPoems);
+  });
 
-//   it("should display the correct columns in the table", () => {
-//     fixture.detectChanges(); // Trigger initial rendering
-//     const columnHeaders = fixture.debugElement.queryAll(
-//       By.css(".mat-header-cell"),
-//     );
+  it("should emit the selected poem when viewPoem is called", (done) => {
+    const mockPoem: Poem = {
+      title: "Selected Poem",
+      author: "Author",
+      lines: ["Line 1", "Line 2"],
+      linecount: 2,
+    };
 
-//     const columnTexts = columnHeaders.map((header) =>
-//       header.nativeElement.textContent.trim(),
-//     );
-//     expect(columnTexts).toEqual(["Index", "Title", "Author", "Linecount"]);
-//   });
+    component.SelectedPoem$.subscribe((poem) => {
+      expect(poem).toEqual(mockPoem);
+      done();
+    });
 
-//   it("should render the correct number of rows in the table", () => {
-//     const mockPoems: Poem[] = [
-//       { title: "Poem 1", author: "Author 1", lines: ["Line 1"], linecount: 1 },
-//       {
-//         title: "Poem 2",
-//         author: "Author 2",
-//         lines: ["Line 1", "Line 2"],
-//         linecount: 2,
-//       },
-//     ];
-//     component.poems$ = of(mockPoems);
-
-//     component.ngOnChanges({
-//       poems$: {
-//         currentValue: of(mockPoems),
-//         previousValue: null,
-//         firstChange: true,
-//         isFirstChange: () => true,
-//       },
-//     });
-
-//     fixture.detectChanges(); // Update the table after setting data
-
-//     const tableRows = fixture.debugElement.queryAll(By.css(".mat-row"));
-//     expect(tableRows.length).toBe(mockPoems.length);
-//   });
-// });
+    component.viewPoem(mockPoem);
+  });
+});

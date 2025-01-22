@@ -1,142 +1,143 @@
-// import { TestBed } from "@angular/core/testing";
-// import {
-//   provideHttpClient,
-//   withInterceptorsFromDi,
-//   HttpClient,
-// } from "@angular/common/http";
-// import {
-//   HttpTestingController,
-//   provideHttpClientTesting,
-// } from "@angular/common/http/testing";
-// import { PoetryService } from "./poetry.service";
-// import { Poem } from "./poem.interface";
-// import { of, throwError } from "rxjs";
+import { TestBed } from "@angular/core/testing";
+import { PoetryService } from "./poetry.service";
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from "@angular/common/http/testing";
+import { of, throwError } from "rxjs";
+import { Poem } from "./poem.interface";
 
-// describe("PoetryService", () => {
-//   let service: PoetryService;
-//   let httpClient: HttpClient;
-//   let httpTestingController: HttpTestingController;
+describe("PoetryService", () => {
+  let service: PoetryService;
+  let httpMock: HttpTestingController;
 
-//   const mockPoems: Poem[] = [
-//     {
-//       title: "title",
-//       author: "author",
-//       lines: ["line_1"],
-//       linecount: 10,
-//     },
-//   ];
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [PoetryService],
+    });
 
-//   beforeEach(() => {
-//     TestBed.configureTestingModule({
-//       providers: [
-//         PoetryService,
-//         provideHttpClientTesting(),
-//         provideHttpClient(withInterceptorsFromDi()),
-//       ],
-//     });
+    service = TestBed.inject(PoetryService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
 
-//     service = TestBed.inject(PoetryService);
-//     httpClient = TestBed.inject(HttpClient);
-//     httpTestingController = TestBed.inject(HttpTestingController);
-//   });
+  afterEach(() => {
+    httpMock.verify();
+  });
 
-//   afterEach(() => {
-//     // Ensure that no outstanding HTTP requests are pending.
-//     httpTestingController.verify();
-//   });
+  it("should be created", () => {
+    expect(service).toBeTruthy();
+  });
 
-//   it("should be created", () => {
-//     expect(service).toBeTruthy();
-//   });
+  it("should fetch poems by author and title", () => {
+    const mockPoems: Poem[] = [
+      {
+        title: "The Raven",
+        author: "Edgar Allan Poe",
+        lines: [
+          "Once upon a midnight dreary",
+          "While I pondered, weak and weary",
+        ],
+        linecount: 2,
+      },
+    ];
+    const author = "Edgar Allan Poe";
+    const title = "The Raven";
 
-//   it("should fetch poems by title", () => {
-//     service.getPoemsByTitle("title");
+    // Simulate the HTTP request and return the mocked response
+    service.getPoemsByAuthorAndTitle(author, title).subscribe((poems) => {
+      expect(poems.length).toBe(1);
+      expect(poems[0].title).toBe("The Raven");
+      expect(poems[0].author).toBe("Edgar Allan Poe");
+    });
 
-//     const req = httpTestingController.expectOne(
-//       "https://poetrydb.org/title/title",
-//     );
-//     expect(req.request.method).toBe("GET");
-//     expect(req.request.responseType).toBe("json");
-//     req.flush(mockPoems);
-//   });
+    const req = httpMock.expectOne(
+      `https://poetrydb.org/author/${encodeURIComponent(author)}/title/${encodeURIComponent(title)}`,
+    );
+    expect(req.request.method).toBe("GET");
+    req.flush(mockPoems);
+  });
 
-//   it("should fetch poems by author", () => {
-//     service.getPoemsByAuthor("author");
-//     const req = httpTestingController.expectOne(
-//       "https://poetrydb.org/author/author",
-//     );
-//     expect(req.request.method).toBe("GET");
-//     expect(req.request.responseType).toBe("json");
-//     req.flush(mockPoems);
-//   });
+  it("should fetch poems by author", () => {
+    const mockPoems: Poem[] = [
+      {
+        title: "Annabel Lee",
+        author: "Edgar Allan Poe",
+        lines: ["It was many and many a year ago"],
+        linecount: 1,
+      },
+    ];
+    const author = "Edgar Allan Poe";
 
-//   it("should fetch poems by title and author", () => {
-//     service.getPoemsByAuthorAndTitle("author", "title");
-//     const req = httpTestingController.expectOne(
-//       "https://poetrydb.org/author/author/title/title",
-//     );
-//     expect(req.request.method).toBe("GET");
-//     expect(req.request.responseType).toBe("json");
-//     req.flush(mockPoems);
-//   });
+    service.getPoemsByAuthor(author).subscribe((poems) => {
+      expect(poems.length).toBe(1);
+      expect(poems[0].author).toBe("Edgar Allan Poe");
+    });
 
-//   it("should fetch random poems", () => {
-//     service.getPoemsByRandom(1);
-//     const req = httpTestingController.expectOne(
-//       "https://poetrydb.org/random/1",
-//     );
-//     expect(req.request.method).toBe("GET");
-//     expect(req.request.responseType).toBe("json");
-//     req.flush(mockPoems);
-//   });
+    const req = httpMock.expectOne(
+      `https://poetrydb.org/author/${encodeURIComponent(author)}`,
+    );
+    expect(req.request.method).toBe("GET");
+    req.flush(mockPoems);
+  });
 
-//   it("should handle errors when fetching poems by title", () => {
-//     spyOn(httpClient, "get").and.returnValue(
-//       throwError(() => new Error("Error fetching data from PoetryDB")),
-//     );
+  it("should fetch poems by title", () => {
+    const mockPoems: Poem[] = [
+      {
+        title: "The Raven",
+        author: "Edgar Allan Poe",
+        lines: ["Once upon a midnight dreary"],
+        linecount: 1,
+      },
+    ];
+    const title = "The Raven";
 
-//     service.getPoemsByTitle("Nonexistent Title").subscribe({
-//       next: () => fail("should have failed with error"),
-//       error: (err) =>
-//         expect(err.message).toBe("Error fetching data from PoetryDB"),
-//     });
-//   });
+    service.getPoemsByTitle(title).subscribe((poems) => {
+      expect(poems.length).toBe(1);
+      expect(poems[0].title).toBe("The Raven");
+    });
 
-//   it("should handle errors when fetching poems by author", () => {
-//     spyOn(httpClient, "get").and.returnValue(
-//       throwError(() => new Error("Error fetching data from PoetryDB")),
-//     );
+    const req = httpMock.expectOne(
+      `https://poetrydb.org/title/${encodeURIComponent(title)}`,
+    );
+    expect(req.request.method).toBe("GET");
+    req.flush(mockPoems);
+  });
 
-//     service.getPoemsByAuthor("Nonexistent Author").subscribe({
-//       next: () => fail("should have failed with error"),
-//       error: (err) =>
-//         expect(err.message).toBe("Error fetching data from PoetryDB"),
-//     });
-//   });
+  it("should fetch random poems", () => {
+    const mockPoems: Poem[] = [
+      {
+        title: "The Raven",
+        author: "Edgar Allan Poe",
+        lines: ["Once upon a midnight dreary"],
+        linecount: 1,
+      },
+    ];
+    const count = 2;
 
-//   it("should handle errors when fetching random poems", () => {
-//     spyOn(httpClient, "get").and.returnValue(
-//       throwError(() => new Error("Error fetching data from PoetryDB")),
-//     );
+    service.getPoemsByRandom(count).subscribe((poems) => {
+      expect(poems.length).toBe(1);
+    });
 
-//     service.getPoemsByRandom(1).subscribe({
-//       next: () => fail("should have failed with error"),
-//       error: (err) =>
-//         expect(err.message).toBe("Error fetching data from PoetryDB"),
-//     });
-//   });
+    const req = httpMock.expectOne(`https://poetrydb.org/random/${count}`);
+    expect(req.request.method).toBe("GET");
+    req.flush(mockPoems);
+  });
 
-//   it("should handle errors when fetching poems by author and title", () => {
-//     spyOn(httpClient, "get").and.returnValue(
-//       throwError(() => new Error("Error fetching data from PoetryDB")),
-//     );
+  it("should handle errors gracefully when HTTP request fails", () => {
+    const author = "Edgar Allan Poe";
 
-//     service
-//       .getPoemsByAuthorAndTitle("Nonexistent Author", "Nonexistent Title")
-//       .subscribe({
-//         next: () => fail("should have failed with error"),
-//         error: (err) =>
-//           expect(err.message).toBe("Error fetching data from PoetryDB"),
-//       });
-//   });
-// });
+    // Simulate an HTTP error
+    service.getPoemsByAuthor(author).subscribe(
+      () => fail("Expected error, but got poems"),
+      (error) => {
+        expect(error).toEqual(new Error("Error fetching data from PoetryDB"));
+      },
+    );
+
+    const req = httpMock.expectOne(
+      `https://poetrydb.org/author/${encodeURIComponent(author)}`,
+    );
+    req.flush("Error", { status: 500, statusText: "Server Error" });
+  });
+});

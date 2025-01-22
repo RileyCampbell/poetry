@@ -73,8 +73,8 @@ export class AppComponent {
         }
       },
       error: (error) => {
-        this.showError(error);
         this.loading = false;
+        this.showError(error);
       },
       complete: () => {
         this.loading = false;
@@ -102,8 +102,8 @@ export class AppComponent {
         }
       },
       error: (error) => {
-        this.showError(error);
         this.loading = false;
+        this.showError(error);
       },
       complete: () => {
         this.loading = false;
